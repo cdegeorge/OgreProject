@@ -18,6 +18,7 @@ protected:
   virtual bool frameRenderingQueued(const Ogre::FrameEvent& fe);
   bool frameStarted(const Ogre::FrameEvent &evt);
   void CreateCube(const btVector3 &Position, btScalar Mass, const btVector3 &scale, char * name);
+  void CreatePlayer();
   Ogre::ManualObject *createCubeMesh(Ogre::String name, Ogre::String matName);
  
 private:

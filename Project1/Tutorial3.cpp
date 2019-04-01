@@ -75,6 +75,44 @@ void TutorialApplication::CreateCube(const btVector3 &Position, btScalar Mass, c
 
 	// Store a pointer to the Ogre Node so we can update it later
 	RigidBody->setUserPointer((void *)(boxNode));
+	//RigidBody->setGravity(btVector3(0, 0, 0));
+
+	// Add it to the physics world
+	dynamicsWorld->addRigidBody(RigidBody);
+	collisionShapes.push_back(Shape);
+}
+void TutorialApplication::CreatePlayer() {
+	Ogre::Vector3 size = Ogre::Vector3::ZERO;
+	btVector3 Position;
+	btVector3 Scale(1.0, 1.0, 1.0);
+	btScalar Mass = 1.0f;
+	Ogre::SceneNode *playerNode = mSceneMgr->getSceneNode("mCamNode");
+	Ogre::Entity *playerEntity;
+	// Convert the ogre vector to bullet physics vector
+	Ogre::Vector3 camPos = playerNode->getPosition();
+	Position.setX(camPos.x);
+	Position.setY(camPos.y);
+	Position.setZ(camPos.z);
+	playerEntity = mSceneMgr->createEntity("Player", "cube.mesh");
+	playerNode->attachObject(playerEntity);
+	playerNode->scale(Ogre::Vector3(Scale.getX(), Scale.getY(), Scale.getZ()));
+	Ogre::AxisAlignedBox boundingB = playerEntity->getBoundingBox();
+	boundingB.scale(Ogre::Vector3(Scale.getX(), Scale.getY(), Scale.getZ()));
+	size = boundingB.getSize()*0.95f;
+	btTransform Transform;
+	Transform.setIdentity();
+	Transform.setOrigin(Position);
+	MyMotionState *MotionState = new MyMotionState(Transform, playerNode);
+	//Give the rigid body half the size
+	// of our player and tell it to create a BoxShape (cube)
+	btVector3 HalfExtents(size.x*0.5f, size.y*0.5f, size.z*0.5f);
+	btCollisionShape *Shape = new btBoxShape(HalfExtents);
+	btVector3 LocalInertia;
+	Shape->calculateLocalInertia(Mass, LocalInertia);
+	btRigidBody *RigidBody = new btRigidBody(Mass, MotionState, Shape, LocalInertia);
+
+	// Store a pointer to the Ogre Node so we can update it later
+	RigidBody->setUserPointer((void *)(playerNode));
 
 	// Add it to the physics world
 	dynamicsWorld->addRigidBody(RigidBody);
@@ -147,11 +185,10 @@ void TutorialApplication::createBulletSim(void) {
 		CreateCube(btVector3(2263, 150, 1200), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube1");
 		CreateCube(btVector3(2253, 100, 1210), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube2");
 		CreateCube(btVector3(2253, 200, 1210), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube3");*/
-		CreateCube(btVector3(2253, 250, 1210), 1.0f, btVector3(1.0, 1.0, 0.1), "Cube4");
+		CreateCube(btVector3(2253, 50, 1210), 1.0f, btVector3(1.0, 1.0, 0.1), "Cube4");
 		//CreateCube(btVector3(1963, 150, 1660),1.0f,btVector3(0.2,0.2,0.2),"Cube1");
-
+		CreatePlayer();
 	}
-
 
   }
 Ogre::ManualObject* TutorialApplication::createCubeMesh(Ogre::String name, Ogre::String matName) {
@@ -197,6 +234,8 @@ void TutorialApplication::createScene()
 	mCamera->setPosition(Ogre::Vector3(1863, 60, 1650));
 	mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
 	mCamera->setNearClipDistance(.1);
+	Ogre::SceneNode* mCamNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("mCamNode");
+	mCamNode->attachObject(mCamera);
 
   bool infiniteClip =
     mRoot->getRenderSystem()->getCapabilities()->hasCapability(
@@ -364,11 +403,11 @@ void TutorialApplication::handleCamCollision() {
 	if (result.terrain) {
 		Ogre::Real terrainHeight = result.position.y;
 
-		//Keep camera at height of 10
-		if (camPos.y < (terrainHeight + 10.0))
-			mCamera->setPosition(camPos.x, terrainHeight + 10.0, camPos.z);
-		if (camPos.y > (terrainHeight + 10.0))
-			mCamera->setPosition(camPos.x, terrainHeight + 10.0, camPos.z);
+		//Keep camera at height of 50
+		if (camPos.y < (terrainHeight + 50.0))
+			mCamera->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
+		if (camPos.y > (terrainHeight + 50.0))
+			mCamera->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
 	}
 }
  
