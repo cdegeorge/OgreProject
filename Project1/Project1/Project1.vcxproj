@@ -12,16 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\BaseApplication.cpp" />
+    <ClCompile Include="..\CameraMan.cpp" />
     <ClCompile Include="..\Tutorial3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\BaseApplication.h" />
+    <ClInclude Include="..\CameraMan.h" />
     <ClInclude Include="..\Tutorial3.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{89B5DCEE-C4E5-4828-9F9C-7B6777D92CB6}</ProjectGuid>
     <RootNamespace>Project1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

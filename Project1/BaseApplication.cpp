@@ -100,7 +100,9 @@ void BaseApplication::createCamera(void)
     mCamera->lookAt(Ogre::Vector3(0,0,-300));
     mCamera->setNearClipDistance(5);
 
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // Create a default camera controller
+	Ogre::SceneNode* playerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode", Ogre::Vector3(1863, 60, 1650));
+    //mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // Create a default camera controller
+	mCameraMan = new CameraController::CameraMan(mCamera, playerNode);
 }
 //---------------------------------------------------------------------------
 void BaseApplication::createFrameListener(void)
@@ -306,6 +308,7 @@ bool BaseApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
 //---------------------------------------------------------------------------
 bool BaseApplication::keyPressed( const OIS::KeyEvent &arg )
 {
+	
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
 
     if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
@@ -395,6 +398,7 @@ bool BaseApplication::keyPressed( const OIS::KeyEvent &arg )
     }
 
     mCameraMan->injectKeyDown(arg);
+	
     return true;
 }
 //---------------------------------------------------------------------------

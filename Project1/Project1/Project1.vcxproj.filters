@@ -21,12 +21,18 @@
     <ClCompile Include="..\Tutorial3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\CameraMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\BaseApplication.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Tutorial3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CameraMan.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

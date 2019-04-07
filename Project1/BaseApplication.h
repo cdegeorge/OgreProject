@@ -34,7 +34,8 @@ http://www.ogre3d.org/wiki/
 #  include <OIS/OISMouse.h>
 
 #  include <OGRE/SdkTrays.h>
-#  include <OGRE/SdkCameraMan.h>
+//#  include <OGRE/SdkCameraMan.h>
+#include "CameraMan.h"
 #else
 #  include <OISEvents.h>
 #  include <OISInputManager.h>
@@ -42,7 +43,8 @@ http://www.ogre3d.org/wiki/
 #  include <OISMouse.h>
 
 #  include <SdkTrays.h>
-#  include <SdkCameraMan.h>
+//#  include <SdkCameraMan.h>
+#include "CameraMan.h"
 #endif
 
 #ifdef OGRE_STATIC_LIB
@@ -113,8 +115,9 @@ protected:
     // OgreBites
     OgreBites::InputContext     mInputContext;
     OgreBites::SdkTrayManager*	mTrayMgr;
-    OgreBites::SdkCameraMan*    mCameraMan;     	// Basic camera controller
-    OgreBites::ParamsPanel*     mDetailsPanel;   	// Sample details panel
+    //OgreBites::SdkCameraMan*    mCameraMan;     	// Basic camera controller
+	CameraController::CameraMan* mCameraMan;
+	OgreBites::ParamsPanel*     mDetailsPanel;   	// Sample details panel
     bool                        mCursorWasVisible;	// Was cursor visible before dialog appeared?
     bool                        mShutDown;
 

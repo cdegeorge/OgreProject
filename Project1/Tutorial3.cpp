@@ -26,9 +26,6 @@ protected:
 	btTransform mPos1;
 };
 
-
-
- 
 TutorialApplication::TutorialApplication()
   : mTerrainGroup(0),
     mTerrainGlobals(0),
@@ -86,16 +83,14 @@ void TutorialApplication::CreatePlayer() {
 	btVector3 Position;
 	btVector3 Scale(1.0, 1.0, 1.0);
 	btScalar Mass = 1.0f;
-	Ogre::SceneNode *playerNode = mSceneMgr->getSceneNode("mCamNode");
-	Ogre::Entity *playerEntity;
+	Ogre::SceneNode *playerNode = mSceneMgr->getSceneNode("PlayerNode");
+	Ogre::Entity *playerEntity = mSceneMgr->getEntity("Player");
 	// Convert the ogre vector to bullet physics vector
 	Ogre::Vector3 camPos = playerNode->getPosition();
 	Position.setX(camPos.x);
 	Position.setY(camPos.y);
 	Position.setZ(camPos.z);
-	playerEntity = mSceneMgr->createEntity("Player", "cube.mesh");
-	playerNode->attachObject(playerEntity);
-	playerNode->scale(Ogre::Vector3(Scale.getX(), Scale.getY(), Scale.getZ()));
+
 	Ogre::AxisAlignedBox boundingB = playerEntity->getBoundingBox();
 	boundingB.scale(Ogre::Vector3(Scale.getX(), Scale.getY(), Scale.getZ()));
 	size = boundingB.getSize()*0.95f;
@@ -104,7 +99,7 @@ void TutorialApplication::CreatePlayer() {
 	Transform.setOrigin(Position);
 	MyMotionState *MotionState = new MyMotionState(Transform, playerNode);
 	//Give the rigid body half the size
-	// of our player and tell it to create a BoxShape (cube)
+	// of our cube and tell it to create a BoxShape (cube)
 	btVector3 HalfExtents(size.x*0.5f, size.y*0.5f, size.z*0.5f);
 	btCollisionShape *Shape = new btBoxShape(HalfExtents);
 	btVector3 LocalInertia;
@@ -113,7 +108,6 @@ void TutorialApplication::CreatePlayer() {
 
 	// Store a pointer to the Ogre Node so we can update it later
 	RigidBody->setUserPointer((void *)(playerNode));
-
 	// Add it to the physics world
 	dynamicsWorld->addRigidBody(RigidBody);
 	collisionShapes.push_back(Shape);
@@ -231,21 +225,15 @@ Ogre::ManualObject* TutorialApplication::createCubeMesh(Ogre::String name, Ogre:
 
 void TutorialApplication::createScene()
 {
-	mCamera->setPosition(Ogre::Vector3(1863, 60, 1650));
-	mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
-	mCamera->setNearClipDistance(.1);
-	Ogre::SceneNode* mCamNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("mCamNode");
-	mCamNode->attachObject(mCamera);
-
   bool infiniteClip =
     mRoot->getRenderSystem()->getCapabilities()->hasCapability(
       Ogre::RSC_INFINITE_FAR_PLANE);
- 
+
   if (infiniteClip)
     mCamera->setFarClipDistance(0);
   else
     mCamera->setFarClipDistance(50000);
- 
+
   mSceneMgr->setAmbientLight(Ogre::ColourValue(.2, .2, .2));
  
   Ogre::Vector3 lightDir(.55, -.3, .75);
@@ -303,13 +291,27 @@ void TutorialApplication::createScene()
  
   // mSceneMgr->setSkyPlane(
   //   true, plane, "Examples/SpaceSkyPlane", 1500, 40, true, 1.5, 150, 150);
+
+  mPlayerEntity = mSceneMgr->createEntity("Player", "sphere.mesh");
+  //mPlayerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode", Ogre::Vector3(1863, 60, 1650));
+  mPlayerNode = mSceneMgr->getSceneNode("PlayerNode");
+  mPlayerNode->scale(1, 1, 1);
+  mPlayerNode->attachObject(mCamera);
+  //mCamera->setPosition(Ogre::Vector3(1863, 60, 1650));
+  mCamera->setPosition(Ogre::Vector3(0, 0, 0));
+  mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
+  mCamera->setNearClipDistance(.1);
+  //mPlayerNode->yaw(Ogre::Degree(80));
+  mPlayerNode->attachObject(mPlayerEntity);
+
+  object = createCubeMesh("cube0", "cube0");
+  pMeshPtr = object->convertToMesh("cube0");
   createBulletSim();
 }
  
 void TutorialApplication::createFrameListener()
 {
   BaseApplication::createFrameListener();
- 
   mInfoLabel = mTrayMgr->createLabel(OgreBites::TL_TOP, "TerrainInfo", "", 350);
 }
  
@@ -332,6 +334,7 @@ bool TutorialApplication::frameStarted(const Ogre::FrameEvent &evt)
 bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
   bool ret = BaseApplication::frameRenderingQueued(fe);
+  playerPosition = mPlayerNode->getPosition();
  
   if (mTerrainGroup->isDerivedDataUpdateInProgress())
   {
@@ -356,10 +359,9 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent& fe)
   }
 
   handleCamCollision();
- 
+
   return ret;
 }
- 
 void getTerrainImage(bool flipX, bool flipY, Ogre::Image& img)
 {
   img.load("terrain.png", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -392,8 +394,15 @@ void TutorialApplication::defineTerrain(long x, long y)
   }
 }
 
+void TutorialApplication::createCamera(void) {
+	BaseApplication::createCamera();
+}
+void TutorialApplication::createViewports(void) {
+	BaseApplication::createViewports();
+}
+
 void TutorialApplication::handleCamCollision() {
-	Ogre::Vector3 camPos = mCamera->getPosition();
+	Ogre::Vector3 camPos = mPlayerNode->getPosition();
 	Ogre::Ray camRay(
 		Ogre::Vector3(camPos.x, 5000.0, camPos.z),
 		Ogre::Vector3::NEGATIVE_UNIT_Y);
@@ -405,9 +414,9 @@ void TutorialApplication::handleCamCollision() {
 
 		//Keep camera at height of 50
 		if (camPos.y < (terrainHeight + 50.0))
-			mCamera->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
+			mPlayerNode->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
 		if (camPos.y > (terrainHeight + 50.0))
-			mCamera->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
+			mPlayerNode->setPosition(camPos.x, terrainHeight + 50.0, camPos.z);
 	}
 }
  
