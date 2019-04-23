@@ -178,12 +178,23 @@ void TutorialApplication::createBulletSim(void) {
 
 		dynamicsWorld->addRigidBody(mGroundBody);
 		collisionShapes.push_back(groundShape);
+
+		// Creating map
+		// Horizontal Walls
 		CreateCube(btVector3(2163, 50, 1160), 1.0f, btVector3(5.0, 1.0, 0.1), "Cube0");
-		CreateCube(btVector3(2163, 50, 1560), 1.0f, btVector3(5.0, 1.0, 0.1), "Cube2");
-		//CreateCube(btVector3(2253, 200, 1210), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube3");
-		CreateCube(btVector3(1903, 50, 1310), 1.0f, btVector3(0.1, 1.0, 3.0), "Cube4");
-		CreateCube(btVector3(2403, 50, 1410), 1.0f, btVector3(0.1, 1.0, 3.0), "Cube5");
-		//CreateCube(btVector3(1963, 150, 1660),1.0f,btVector3(0.2,0.2,0.2),"Cube1");
+		CreateCube(btVector3(2163, 50, 1560), 1.0f, btVector3(5.0, 1.0, 0.1), "Cube1");
+		CreateCube(btVector3(2163, 50, 1210), 1.0f, btVector3(3.0, 1.0, 0.1), "Cube2");
+		CreateCube(btVector3(2068, 50, 1280), 1.0f, btVector3(2.0, 1.0, 0.1), "Cube3");
+		CreateCube(btVector3(2128, 50, 1380), 1.0f, btVector3(1.0, 1.0, 0.1), "Cube4");
+		CreateCube(btVector3(2128, 50, 1460), 1.0f, btVector3(2.0, 1.0, 0.1), "Cube5");
+
+		//Vertical walls
+		CreateCube(btVector3(1903, 50, 1310), 1.0f, btVector3(0.1, 1.0, 3.0), "Cube6");
+		CreateCube(btVector3(2403, 50, 1410), 1.0f, btVector3(0.1, 1.0, 3.3), "Cube7");
+		CreateCube(btVector3(1963, 50, 1350), 1.0f, btVector3(0.1, 1.0, 3.0), "Cube8");
+		CreateCube(btVector3(2323, 50, 1320), 1.0f, btVector3(0.1, 1.0, 3.5), "Cube9");
+		CreateCube(btVector3(2023, 50, 1450), 1.0f, btVector3(0.1, 1.0, 2.0), "Cube10");
+		CreateCube(btVector3(2223, 50, 1310), 1.0f, btVector3(0.1, 1.0, 2.0), "Cube11");
 		CreatePlayer();
 	}
 
@@ -368,10 +379,9 @@ bool TutorialApplication::frameStarted(const Ogre::FrameEvent &evt)
 	timer->setText(minString + ":" + secString);
 
 	if (seconds == 0 && minutes == 0) {
-		//mSceneMgr->clearScene();
+		mPlayerNode->setPosition(Ogre::Vector3(1863, 60, 1650));
+		mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
 		mTimer.reset();
-		//createScene();
-		// Refresh scene. Commenting these out crashes the program.
 	}
 	return true;
 }
@@ -463,6 +473,19 @@ void TutorialApplication::handleCamCollision() {
 		Ogre::Vector3::NEGATIVE_UNIT_Y);
 
 	Ogre::TerrainGroup::RayResult result = mTerrainGroup->rayIntersects(camRay);
+
+	// Limiting camera pitch - problem in it when camera moves around y-axis
+	//Ogre::Real pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->mCamera->getOrientation().w)).valueDegrees());
+	//Ogre::Real pitchAngleSign = this->mCamera->getOrientation().x;
+	//if (pitchAngle > 90.0f)
+	//{
+	//	if (pitchAngleSign > 0)
+	//		// Set orientation to 90 degrees on X-axis.
+	//		mCamera->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
+	//	else if (pitchAngleSign < 0)
+	//		// Sets orientation to -90 degrees on X-axis.
+	//		this->mCamera->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
+	//}
 
 	if (result.terrain) {
 		Ogre::Real terrainHeight = result.position.y;
