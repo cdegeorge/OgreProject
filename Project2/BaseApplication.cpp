@@ -101,8 +101,12 @@ void BaseApplication::createCamera(void)
     mCamera->setNearClipDistance(5);
 
 	Ogre::SceneNode* playerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode", Ogre::Vector3(1863, 60, 1650));
+	Ogre::SceneNode* playerYawNode = playerNode->createChildSceneNode("PlayerYawNode");
+	Ogre::SceneNode* playerPitchNode = playerYawNode->createChildSceneNode("PlayerPitchNode");
+	Ogre::SceneNode* playerRollNode = playerPitchNode->createChildSceneNode("PlayerRollNode");
+	playerRollNode->attachObject(mCamera);
     //mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // Create a default camera controller
-	mCameraMan = new CameraController::CameraMan(mCamera, playerNode);
+	mCameraMan = new CameraController::CameraMan(mCamera, playerNode, playerYawNode, playerPitchNode, playerRollNode);
 }
 //---------------------------------------------------------------------------
 void BaseApplication::createFrameListener(void)

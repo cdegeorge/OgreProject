@@ -126,7 +126,7 @@ void TutorialApplication::createBulletSim(void) {
 	solver = new btSequentialImpulseConstraintSolver;
 
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, 0, 0));
+	dynamicsWorld->setGravity(btVector3(0, -9.8, 0));
 	{
 		///create a few basic rigid bodies
 		// start with ground plane, 1500, 1500
@@ -179,7 +179,7 @@ void TutorialApplication::createBulletSim(void) {
 		CreateCube(btVector3(2263, 150, 1200), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube1");
 		CreateCube(btVector3(2253, 100, 1210), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube2");
 		CreateCube(btVector3(2253, 200, 1210), 1.0f, btVector3(0.2, 0.2, 0.2), "Cube3");*/
-		CreateCube(btVector3(2253, 50, 1210), 1.0f, btVector3(1.0, 1.0, 0.1), "Cube4");
+		CreateCube(btVector3(2253, 50, 1210), 0, btVector3(1.0, 1.0, 0.1), "Cube4");
 		//CreateCube(btVector3(1963, 150, 1660),1.0f,btVector3(0.2,0.2,0.2),"Cube1");
 		CreatePlayer();
 	}
@@ -358,7 +358,7 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent& fe)
     }
   }
 
-  handleCamCollision();
+  //handleCamCollision();
 
   return ret;
 }

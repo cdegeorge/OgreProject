@@ -26,7 +26,7 @@ namespace CameraController
 	class CameraMan
 	{
 	public:
-		CameraMan(Ogre::Camera* cam, Ogre::SceneNode* node);
+		CameraMan(Ogre::Camera* cam, Ogre::SceneNode* node, Ogre::SceneNode* yawNode, Ogre::SceneNode* pitchNode, Ogre::SceneNode* rollNode);
 		virtual ~CameraMan();
 
 		/*-----------------------------------------------------------------------------
@@ -107,6 +107,9 @@ namespace CameraController
 
 		Ogre::Camera* mCamera;
 		Ogre::SceneNode* mCamNode;
+		Ogre::SceneNode* mCamYawNode;
+		Ogre::SceneNode* mCamPitchNode;
+		Ogre::SceneNode* mCamRollNode;
 		CameraStyle mStyle;
 		Ogre::SceneNode* mTarget;
 		bool mOrbiting;

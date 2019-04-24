@@ -6,9 +6,12 @@
 using namespace CameraController;
 
 //-------------------------------------------------------------------------------------
-CameraMan::CameraMan(Ogre::Camera* cam, Ogre::SceneNode* node)
+CameraMan::CameraMan(Ogre::Camera* cam, Ogre::SceneNode* node, Ogre::SceneNode* yawNode, Ogre::SceneNode* pitchNode, Ogre::SceneNode* rollNode)
 	: mCamera(0)
 	, mCamNode(node)
+	, mCamYawNode(yawNode)
+	, mCamPitchNode(pitchNode)
+	, mCamRollNode(rollNode)
 	, mTarget(0)
 	, mOrbiting(false)
 	, mZooming(false)
@@ -24,6 +27,9 @@ CameraMan::CameraMan(Ogre::Camera* cam, Ogre::SceneNode* node)
 {
 	setCamera(cam);
 	mCamNode = node;
+	mCamYawNode = yawNode;
+	mCamPitchNode = pitchNode;
+	mCamRollNode = rollNode;
 	setStyle(CS_FREELOOK);
 }
 
@@ -180,7 +186,13 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent& evt)
 		else if (mVelocity.squaredLength() < tooSmall * tooSmall)
 			mVelocity = Ogre::Vector3::ZERO;
 
-		if (mVelocity != Ogre::Vector3::ZERO) mCamNode->translate(mVelocity * evt.timeSinceLastFrame);
+		if (mVelocity != Ogre::Vector3::ZERO)
+			mCamNode->translate(
+				this->mCamYawNode->getOrientation() *
+				this->mCamPitchNode->getOrientation() *
+				mVelocity * evt.timeSinceLastFrame,
+				Ogre::SceneNode::TS_LOCAL
+			);
 	}
 
 	return true;
@@ -257,8 +269,17 @@ void CameraMan::injectMouseMove(const OIS::MouseEvent& evt)
 	}
 	else if (mStyle == CS_FREELOOK)
 	{
-		mCamera->yaw(Ogre::Degree(-evt.state.X.rel * 0.15f));
-		mCamera->pitch(Ogre::Degree(-evt.state.Y.rel * 0.15f));
+		this->mCamYawNode->yaw(Ogre::Degree(-evt.state.X.rel * 0.15f));
+		this->mCamPitchNode->pitch(Ogre::Degree(-evt.state.Y.rel * 0.15f));
+		
+		Ogre::Real pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->mCamPitchNode->getOrientation().w)).valueDegrees());
+		Ogre::Real pitchAngleSign = this->mCamPitchNode->getOrientation().x;
+		if (pitchAngle > 90.0f) {
+			if (pitchAngleSign > 0)
+				this->mCamPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
+			else if (pitchAngleSign < 0)
+				this->mCamPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
+		}
 	}
 }
 

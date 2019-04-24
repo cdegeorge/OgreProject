@@ -319,7 +319,7 @@ void TutorialApplication::createScene()
   //mPlayerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode", Ogre::Vector3(1863, 60, 1650));
   mPlayerNode = mSceneMgr->getSceneNode("PlayerNode");
   mPlayerNode->scale(1, 1, 1);
-  mPlayerNode->attachObject(mCamera);
+  //mPlayerNode->attachObject(mCamera);
   //mCamera->setPosition(Ogre::Vector3(1863, 60, 1650));
   mCamera->setPosition(Ogre::Vector3(0, 0, 0));
   mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
