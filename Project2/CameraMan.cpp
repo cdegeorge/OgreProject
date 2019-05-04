@@ -269,8 +269,8 @@ void CameraMan::injectMouseMove(const OIS::MouseEvent& evt)
 	}
 	else if (mStyle == CS_FREELOOK)
 	{
-		this->mCamYawNode->yaw(Ogre::Degree(evt.state.X.rel * 0.15f));
-		this->mCamPitchNode->pitch(Ogre::Degree(evt.state.Y.rel * 0.15f));
+		mCamYawNode->yaw(Ogre::Degree(-evt.state.X.rel * 0.15f));
+		mCamPitchNode->pitch(Ogre::Degree(-evt.state.Y.rel * 0.15f));
 		
 		Ogre::Real pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->mCamPitchNode->getOrientation().w)).valueDegrees());
 		Ogre::Real pitchAngleSign = this->mCamPitchNode->getOrientation().x;

@@ -473,20 +473,6 @@ void TutorialApplication::handleCamCollision() {
 		Ogre::Vector3::NEGATIVE_UNIT_Y);
 
 	Ogre::TerrainGroup::RayResult result = mTerrainGroup->rayIntersects(camRay);
-
-	// Limiting camera pitch - problem in it when camera moves around y-axis
-	//Ogre::Real pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->mCamera->getOrientation().w)).valueDegrees());
-	//Ogre::Real pitchAngleSign = this->mCamera->getOrientation().x;
-	//if (pitchAngle > 90.0f)
-	//{
-	//	if (pitchAngleSign > 0)
-	//		// Set orientation to 90 degrees on X-axis.
-	//		mCamera->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
-	//	else if (pitchAngleSign < 0)
-	//		// Sets orientation to -90 degrees on X-axis.
-	//		this->mCamera->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
-	//}
-
 	if (result.terrain) {
 		Ogre::Real terrainHeight = result.position.y;
 
