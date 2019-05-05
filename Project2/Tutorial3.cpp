@@ -38,6 +38,57 @@ TutorialApplication::TutorialApplication()
 TutorialApplication::~TutorialApplication()
 {
 	CEGUI::OgreRenderer::destroySystem();
+	mInputManager->destroyInputObject(mKeyboard);
+	mInputManager->destroyInputObject(mMouse);
+	delete mRoot;
+
+	// cleanup bulletdynamics
+
+	// cleanup in the reverse order of creation/initialization
+	// remove the rigidbodies from the dynamics world and delete them
+	for (int i = dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
+		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(obj);
+		if (body && body->getMotionState()) {
+			delete body->getMotionState();
+		}
+		dynamicsWorld->removeCollisionObject(obj);
+		delete obj;
+	}
+
+	// delete collision shapes
+	for (int j = 0; j < collisionShapes.size(); j++) {
+		btCollisionShape* shape = collisionShapes[j];
+		if (collisionShapes[j]) {
+			collisionShapes[j] = 0;
+			delete shape;
+		}
+	}
+
+	// delete all cube entities
+	int cubeNo = 0;
+	bool cubeFound = true;
+	while (cubeFound) {
+		const std::string cubeName = "Cube" + std::to_string(cubeNo);
+		try {
+			throw mSceneMgr->getEntity(cubeName);
+		}
+		catch (Ogre::Entity* cube) {
+			mSceneMgr->destroyEntity(cube);
+			mSceneMgr->destroySceneNode(cubeName);
+			cubeNo++;
+		}
+		catch (const std::exception& e) {
+			cubeFound = false;
+		}
+	}
+
+	delete dynamicsWorld;
+	delete solver;
+	delete overlappingPairCache;
+	delete dispatcher;
+	delete collisionConfiguration;
+	if (mCameraMan) delete mCameraMan;
 }
  
 void TutorialApplication::CreateCube(const btVector3 &Position, btScalar Mass, const btVector3 &scale, char * name){
@@ -53,7 +104,7 @@ void TutorialApplication::CreateCube(const btVector3 &Position, btScalar Mass, c
 	boxentity = mSceneMgr->createEntity(name, "cube.mesh");
 	//boxentity->setScale(Vector3(scale.x,scale.y,scale.z));
 	boxentity->setCastShadows(true);
-	boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+	boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
 	boxNode->attachObject(boxentity);
 	boxNode->scale(Ogre::Vector3(scale.getX(), scale.getY(), scale.getZ()));
 	//boxNode->setScale(Vector3(0.1,0.1,0.1));
@@ -319,8 +370,6 @@ void TutorialApplication::createScene()
   //mPlayerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode", Ogre::Vector3(1863, 60, 1650));
   mPlayerNode = mSceneMgr->getSceneNode("PlayerNode");
   mPlayerNode->scale(1, 1, 1);
-  //mPlayerNode->attachObject(mCamera);
-  //mCamera->setPosition(Ogre::Vector3(1863, 60, 1650));
   mCamera->setPosition(Ogre::Vector3(0, 0, 0));
   mCamera->lookAt(Ogre::Vector3(2263, 50, 1200));
   mCamera->setNearClipDistance(.1);
